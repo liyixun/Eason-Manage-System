@@ -1,0 +1,16 @@
+*log
+npm-debug.log
+client/node_modules/
+client/dist/
+user/node_modules/
+user/dist/
+server/logs/
+server/node_modules/
+server/public/static/
+server/public/pic/*.jpg
+server/public/pic/*.png
+server/public/pic/*.gif
+server/public/pdf/*.pdf
+**/.vscode
+.idea/workspace.xml
+.idea/
