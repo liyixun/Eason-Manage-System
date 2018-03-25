@@ -3,6 +3,7 @@
  */
 const ApiError = require('../error/ApiError');
 const ApiErrorNames = require('../error/ApiErrorNames');
+const modelConstants = require('../assests/config').demoModelConstant;
 const usersDao = require('../dao/users.dao');
 const db = require('../dao/mongo');
 const moment = require('moment');
@@ -37,46 +38,61 @@ exports.registerUser = async (ctx, next) => {
   }
 };
 
+/**
+ * 登录的时候先判断模式，如果是DEMO模式的话就直接判断和常量是否相等，相等就通过
+ * 如果是开发者模式的话，就查询数据库中的账号密码，校验成功向MongoDB中插入一条登录记录
+ */
 exports.checkUserLogin = async (ctx, next) => {
   let email = ctx.request.body.email;
   let password = ctx.request.body.password;
-  let result = await usersDao.checkUserLogin(email);
-  if (result && result.length) {
-    if (email === result[0].email && password === result[0].password) {
-      let dateStamp = moment(new Date()).format('YYYY-MM-DD HH:mm:SS');
-      // let collection = db.getDataDB().collection('UserLoginRecord');
-      // collection.insertOne({
-      //   "email": email,
-      //   "loginTime": dateStamp
-      // }, (err, result) => {
-      //
-      // });
-      let insertData = {
-        "email": email,
-        "loginTime": dateStamp
-      };
-      db.insertUserLoginRecord(insertData);
-      ctx.body = {
-        result: true,
-        userInfo: {
-          email: email,
-          userName: result[0].username
-        }
-      }
-    } else if (email === result[0].email && password !== result[0].password) {
-      ctx.body = {
-        result: false,
-        msg: 'errorPW'
-      }
-    } else {
-      ctx.body = {
-        result: false
+  let openModel = ctx.request.body.openModel;
+  if (openModel === modelConstants.DEMO_MODEL && email === modelConstants.DEMO_MODEL_EMAIL && password === modelConstants.DEMO_MODEL_PW) {
+    ctx.body = {
+      result: true,
+      userInfo: {
+        email: email,
+        userName: modelConstants.DEMO_MODEL_USERNAME
       }
     }
   } else {
-    ctx.body = {
-      result: false,
-      msg: 'emailNoExist'
+    let result = await usersDao.checkUserLogin(email);
+    if (result && result.length) {
+      if (email === result[0].email && password === result[0].password) {
+        let dateStamp = moment(new Date()).format('YYYY-MM-DD HH:mm:SS');
+        // let collection = db.getDataDB().collection('UserLoginRecord');
+        // collection.insertOne({
+        //   "email": email,
+        //   "loginTime": dateStamp
+        // }, (err, result) => {
+        //
+        // });
+        let insertData = {
+          "email": email,
+          "loginTime": dateStamp
+        };
+        db.insertUserLoginRecord(insertData);
+        ctx.body = {
+          result: true,
+          userInfo: {
+            email: email,
+            userName: result[0].username
+          }
+        }
+      } else if (email === result[0].email && password !== result[0].password) {
+        ctx.body = {
+          result: false,
+          msg: 'errorPW'
+        }
+      } else {
+        ctx.body = {
+          result: false
+        }
+      }
+    } else {
+      ctx.body = {
+        result: false,
+        msg: 'emailNoExist'
+      }
     }
   }
 };

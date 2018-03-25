@@ -1,6 +1,7 @@
 /**
  * Created by eason on 17/8/5.
  */
+'use strict';
 module.exports = async (ctx, next) => {
   let timeStamp = ctx.request.body.timeStamp;
   if (timeStamp) {

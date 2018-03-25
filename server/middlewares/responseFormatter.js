@@ -21,7 +21,7 @@ var responseFormatter = (ctx) => {
   }
 };
 
-var url_filter = (pattern) => {
+var url_filter = pattern => {
   return async (ctx, next) => {
     var reg = new RegExp(pattern);
     try {

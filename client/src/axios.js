@@ -1,10 +1,9 @@
 /**
  * Created by eason on 17/8/3.
  */
-import axios from 'axios'
-import qs from 'qs'
-import CONFIG from '../config/config'
-import _ from 'lodash'
+import axios from 'axios';
+import qs from 'qs';
+import CONFIG from '../config/config';
 
 //设置全局axios默认值
 axios.defaults.timeout = 5000;  //5000的超时验证
