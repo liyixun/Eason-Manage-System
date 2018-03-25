@@ -9,6 +9,12 @@
         <el-form-item prop="password">
           <el-input type="password" placeholder="密码" v-model="EMSForm.password" @keyup.enter.native="submitForm('EMSForm')"></el-input>
         </el-form-item>
+        <el-form-item>
+          <el-radio-group v-model="EMSForm.openModel" :change="changeOpenModel()">
+            <el-radio :label="'DEVELOP'">本地开发模式</el-radio>
+            <el-radio :label="'DEMO'">DEMO模式</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <div class="login-btn">
           <el-button type="primary" @click="submitForm('EMSForm')">登录</el-button>
         </div>
@@ -27,7 +33,8 @@
       return {
         EMSForm: {
           email: '',
-          password: ''
+          password: '',
+          openModel: 'DEVELOP'
         },
         rules: {
           email: [
@@ -47,7 +54,8 @@
           if (valid) {
             let params = {
               email: this.EMSForm.email,
-              password: this.EMSForm.password
+              password: this.EMSForm.password,
+              openModel: this.EMSForm.openModel
             };
             let _this = this;
             service.checkUserLogin(params).then(function (resp) {
@@ -79,6 +87,12 @@
             return false;
           }
         });
+      },
+      changeOpenModel() {
+        if (this.EMSForm.openModel === 'DEMO') {                  // DEMO模式下自动填充账号密码
+          this.EMSForm.email = 'guest';
+          this.EMSForm.password = 'guest';
+        }
       }
     },
     components: {}
